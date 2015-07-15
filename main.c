@@ -39,6 +39,7 @@ int main(int argc, char const *argv[])
 
 		if (option == 1)
 		{
+			/*Missing the error of invalid element. FML....*/
 			printf("Type the element you want to check the index:\n");
 			scanf("%d", &element);
 			x = Array_getIndexFor(a, element, &erro);
