@@ -1,4 +1,9 @@
-/* Commentary soon  */
+/* So, basically, in my home work, I should create functions to provide a dynamic array, where it can grow (if the memory
+supports such thing) or simply disappear. It's the concept of arrayList that we all know and love. 
+In my graduation, I'm studying now C for Algorithms, C# in objected-oriented programming, Assembly in PC Architecture (rather
+die). As a newbie in this area for almost 9 months now, I'm trying to learn the new things and insert myself on the market.
+
+And yes, I prefer back-end because it's so fun and I love to suffer.*/
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -146,30 +151,36 @@ int Array_removeAt(struct DynIntArray * self, int index, int *error){
 
 int Array_removeLast(struct DynIntArray * self,  int *error){ 
 	*error = 0;
+	int aux = -1;
 	int removedElem;
+
 	if (self == NULL)
 	{
 		*error = 1;
 	}
 	else
 	{
-		if (self->used != 0])
+		if (self->used != 0)
 		{
-			removedElem = self->values[used-1];
-			self->values[self->used--] = NULL;
+/*This is complete bullshit but yeah -_- fuck it.*/
+			aux = self->used;
+			removedElem = self->values[aux-1];
+			self->values[aux-1] = NULL;
+			self->used = aux-1;
+			return removedElem;
 		}
 		else
 		{
 			*error = 3;
 		}
 	}
-	return removedElem;
 }
 
 int Array_getAtIndex(struct DynIntArray * self, int index, int *error)
 {
 	int value = 0;
 	*error = 0;
+
 	if (self == NULL)
 	{
 		*error = 1;
@@ -188,24 +199,34 @@ int Array_getAtIndex(struct DynIntArray * self, int index, int *error)
 	return value;
 }
 
+/* My main problem here is the fact that we have 3 types of error:
+1 - The self is pointing something that doesn't exist ~no array~. 
+2 - The value is nowhere to be found in the current array informed.
+3 - The type of value does not match with the type of value inside the array.
+To me, is redundant to have 2 and 3 separately. Oh well, another problem I gotta solve.*/
 int Array_getIndexFor(struct DynIntArray * self, int value, int *error){ 
-	int index = 0;
+	int index;
+	int i = -1;
 	*error = 0;
 
-	if(self == NULL){
+	if(self == NULL)
+	{
 		*error = 1;
 	}
-	else{
-		for (int index, index < self-> used, index++)
+	else
+	{
+		
+		for (index = 0; index < self->used; index++)
 		{
-			if (self->values[index] == value)
+			if (value == self->values[index])
 			{
-				return index;	
+				i = index;
+				return i;
 			}
-			else
-			{
-				*error = 2;
-			}
+		}
+		if(i == -1)
+		{
+			return i;
 		}
 	}
 }
