@@ -5,10 +5,17 @@ die). As a newbie in this area for almost 9 months now, I'm trying to learn the 
 
 And yes, I prefer back-end because it's so fun and I love to suffer.*/
 
-#include "stdio.h"
 #include "stdlib.h"
 #include "array_int.h"
- 
+
+#ifndef ERROR_LISTA
+#define NO_ERROR 0
+#define MEMORY_ERROR 1
+#define INDEX_ERROR 2
+#define EMPTY_ERROR 3
+#define ALLOC_ERROR 5
+#endif
+
 void Array_expand(struct DynIntArray * self, int *error){
 	int *old = self->values;
 	self->values = (int*) realloc(self->values, sizeof(int)*(self->capacity*=2));
@@ -27,7 +34,7 @@ struct DynIntArray * Array_new(int *error)
 	struct DynIntArray * new;
 	new = (struct DynIntArray*) malloc(sizeof(struct DynIntArray));
 	int * a;
-	*error = 0;
+	*error = NO_ERROR;
 	if (new != NULL)
 	{
 		a = (int*) malloc(sizeof(int)*8);
@@ -39,24 +46,24 @@ struct DynIntArray * Array_new(int *error)
 		}
 		else
 		{
-			*error = 5;
+			*error = ALLOC_ERROR;
 			free(new);
 			new = NULL;
 		}
 	}
 	else
 	{
-		*error = 5;
+		*error = ALLOC_ERROR;
 	}
 	return new;
 }
 
 void Array_setAt(struct DynIntArray * self, int value, int index, int *error)
 {
-	*error = 0;
+	*error = NO_ERROR;
 	if (self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
@@ -66,17 +73,17 @@ void Array_setAt(struct DynIntArray * self, int value, int index, int *error)
 		}
 		else
 		{
-			*error = 2;
+			*error = INDEX_ERROR;
 		}
 	}
 }
 
 void Array_insertLast(struct DynIntArray * self, int value, int *error)
 {
-	*error = 0;
+	*error = NO_ERROR;
 	if (self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
@@ -86,9 +93,9 @@ void Array_insertLast(struct DynIntArray * self, int value, int *error)
 		}
 		if (self->values == NULL)
 		{
-			*error = 5;
+			*error = ALLOC_ERROR;
 		}
-		if (*error == 0)
+		if (*error == NO_ERROR)
 		{
 			self->values[self->used++] = value;
 		}
@@ -96,11 +103,12 @@ void Array_insertLast(struct DynIntArray * self, int value, int *error)
 }
 
 void Array_insertFirst(struct DynIntArray * self, int value, int *error){
-  *error = 0;
   int aux = 0;
+  int i;
+  *error = NO_ERROR;
   if (self == NULL)
   	{
-  		*error = 1;
+  		*error = MEMORY_ERROR;
   	}
   else
   	{
@@ -110,25 +118,28 @@ void Array_insertFirst(struct DynIntArray * self, int value, int *error){
   		}
 		if (self->values == NULL)
 		{
-			*error = 5;
+			*error = ALLOC_ERROR;
 		}
-  		if (*error == 0)
+  		if (*error == NO_ERROR)
   		{
-  			for (int i = 0; i < self->used; i++)
+  			for (i = 0; i < self->used; i++)
   			{
-  				aux = values[i];
-  				values[i+1] = aux; 
+  				aux = self->values[i];
+  				self->values[i+1] = aux; 
   			}
-  			values[0] = value;
+  			self->values[0] = value;
+  			self->used = self->used+1;
   		}
   	}
 }
 
 int Array_removeAt(struct DynIntArray * self, int index, int *error){ 
 	int removedElem = 0;
+	int i;
+	*error = NO_ERROR;
 	if (self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
@@ -137,32 +148,30 @@ int Array_removeAt(struct DynIntArray * self, int index, int *error){
 			removedElem = self->values[index];
 			for (i = index; i < self->used; i++)
 			{
-				values[i] = values[i+1] /* Substitui o valor do índice informado pelo seguinte*/
+				self->values[i] = self->values[i+1]; 
 			}
-			self->values[self->used--] = NULL; /* Decresce o último elemento */
+			self->values[self->used--] = NULL; 
 		}
 		else
 		{
-			*error = 2;
+			return *error = INDEX_ERROR;
 		}
 	}
 	return removedElem;
 }
 
 int Array_removeLast(struct DynIntArray * self,  int *error){ 
-	*error = 0;
 	int aux = -1;
 	int removedElem;
-
+	*error = NO_ERROR;
 	if (self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
 		if (self->used != 0)
 		{
-/*This is complete bullshit but yeah -_- fuck it.*/
 			aux = self->used;
 			removedElem = self->values[aux-1];
 			self->values[aux-1] = NULL;
@@ -171,7 +180,7 @@ int Array_removeLast(struct DynIntArray * self,  int *error){
 		}
 		else
 		{
-			*error = 3;
+			*error = EMPTY_ERROR;
 		}
 	}
 }
@@ -179,17 +188,17 @@ int Array_removeLast(struct DynIntArray * self,  int *error){
 int Array_getAtIndex(struct DynIntArray * self, int index, int *error)
 {
 	int value = 0;
-	*error = 0;
+	*error = NO_ERROR;
 
 	if (self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
 		if (index < 0 || index >= self->used)
 		{
-			*error = 2;
+			*error = INDEX_ERROR;
 		}
 		else
 		{
@@ -199,19 +208,14 @@ int Array_getAtIndex(struct DynIntArray * self, int index, int *error)
 	return value;
 }
 
-/* My main problem here is the fact that we have 3 types of error:
-1 - The self is pointing something that doesn't exist ~no array~. 
-2 - The value is nowhere to be found in the current array informed.
-3 - The type of value does not match with the type of value inside the array.
-To me, is redundant to have 2 and 3 separately. Oh well, another problem I gotta solve.*/
 int Array_getIndexFor(struct DynIntArray * self, int value, int *error){ 
 	int index;
 	int i = -1;
-	*error = 0;
+	*error = NO_ERROR;
 
 	if(self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
@@ -226,7 +230,7 @@ int Array_getIndexFor(struct DynIntArray * self, int value, int *error){
 		}
 		if(i == -1)
 		{
-			return i;
+			*error = INDEX_ERROR;
 		}
 	}
 }
@@ -234,10 +238,10 @@ int Array_getIndexFor(struct DynIntArray * self, int value, int *error){
 int Array_size(struct DynIntArray * self, int *error)
 {
 	int size = -1;
-	*error = 0;
+	*error = NO_ERROR;
 	if (self == NULL)
 	{
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else
 	{
@@ -249,9 +253,9 @@ int Array_size(struct DynIntArray * self, int *error)
 int Array_capacity(struct DynIntArray * self, int *error)
 {
 	int size = -1; 
-	*error = 0; 
+	*error = NO_ERROR; 
 	if (self == NULL){
-		*error = 1;
+		*error = MEMORY_ERROR;
 	}
 	else {
 		size = self->capacity;
