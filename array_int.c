@@ -21,10 +21,6 @@ void Array_expand(struct DynIntArray * self, int *error){
 	self->values = (int*) realloc(self->values, sizeof(int)*(self->capacity*=2));
 	if (self->values != old)
 	{
-		free(self);
-	}
-	else
-	{
 		free(old);
 	}
 }
