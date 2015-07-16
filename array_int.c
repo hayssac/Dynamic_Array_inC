@@ -23,6 +23,7 @@ void Array_expand(struct DynIntArray * self, int *error){
 	{
 		free(old);
 	}
+	/* Pointless comparison, though I'm working with a condition for it */
 }
 
 struct DynIntArray * Array_new(int *error)
@@ -98,15 +99,16 @@ void Array_insertLast(struct DynIntArray * self, int value, int *error)
 	}
 }
 
-void Array_insertFirst(struct DynIntArray * self, int value, int *error){
-  int aux = 0;
-  int i;
-  *error = NO_ERROR;
-  if (self == NULL)
+void Array_insertFirst(struct DynIntArray * self, int value, int *error)
+{
+	int aux = 0;
+	int i;
+	*error = NO_ERROR;
+	if (self == NULL)
   	{
   		*error = MEMORY_ERROR;
   	}
-  else
+  	else
   	{
   		if (self->used >= self->capacity)
   		{
@@ -185,7 +187,6 @@ int Array_getAtIndex(struct DynIntArray * self, int index, int *error)
 {
 	int value = 0;
 	*error = NO_ERROR;
-
 	if (self == NULL)
 	{
 		*error = MEMORY_ERROR;
@@ -208,14 +209,12 @@ int Array_getIndexFor(struct DynIntArray * self, int value, int *error){
 	int index;
 	int i = -1;
 	*error = NO_ERROR;
-
-	if(self == NULL)
+	if (self == NULL)
 	{
 		*error = MEMORY_ERROR;
 	}
 	else
 	{
-		
 		for (index = 0; index < self->used; index++)
 		{
 			if (value == self->values[index])
